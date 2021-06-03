@@ -1,22 +1,21 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import './index.css'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
-import reducer from './reducers'
-import middleware from './middleware'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import './index.css';
-import App from './components/App'
-import { BrowserRouter } from 'react-router-dom';
+import 'semantic-ui-css/semantic.min.css';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+import {createStore} from "redux";
+import { Provider } from 'react-redux';
+import reducers from './reducers';
+import middlewares from './middleware'
 
-const store = createStore(reducer, middleware);
+const store = createStore(reducers, middlewares);
 
 ReactDOM.render(
     <Provider store={store}>
-      <BrowserRouter>
         <App />
-      </BrowserRouter>
     </Provider>,
-    document.getElementById('root')
+  document.getElementById('root')
 );
+
+serviceWorker.unregister();

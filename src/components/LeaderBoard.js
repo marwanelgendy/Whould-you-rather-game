@@ -1,48 +1,42 @@
-import React, { Fragment } from "react"
-import { connect } from "react-redux"
-import { Table } from 'reactstrap';
-import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {Grid} from 'semantic-ui-react';
+import {connect} from 'react-redux';
+import LeaderboardUserCard from "./LeaderboardUserCard";
 
-function Leaderboard(props) {
-  const { users } = props;
-  return (
-    <Fragment>
-      <Table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Profile</th>
-            <th>User</th>
-            <th>Questions Asked</th>
-            <th>Questions Answered</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user, index) => (
-            <tr key={user.id}>
-              <td>{index + 1}</td>
-              <td><img src={user.avatarURL} className='avatar' alt={`Avatar of ${user.name}`}/></td>
-              <td>{user.name}</td>
-              <td>{user.questions.length}</td>
-              <td>{Object.keys(user.answers).length}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </Fragment>
-  )
+class Leaderboard extends Component {
+    render() {
+        const {users} = this.props;
+        return (
+            <Grid className='segment centered'>
+                <br/>
+                {
+                    users.map((user, position) => {
+                        return (
+                            <Grid.Row columns={1} key={user.id}>
+                                <LeaderboardUserCard user={user} position={position + 1}/>
+                            </Grid.Row>
+                        )
+                    })
+                }
+                <br/>
+            </Grid>
+        )
+    }
 }
 
-Leaderboard.propTypes = {
-  users: PropTypes.array.isRequired
-};
+function mapStateToProps({users}) {
+    const usersObjectsArr = Object.values(users);
+    const topThreeUsers = usersObjectsArr.map(user => ({
+        id: user.id,
+        name: user.name,
+        avatarURL: user.avatarURL,
+        questionsAnswered: Object.values(user.answers).length,
+        questionsCreated: user.questions.length,
+        score: Object.values(user.answers).length + user.questions.length,
+    })).sort((a, b) => a.score - b.score).reverse().slice(0, 3);
+    return {
+        users: topThreeUsers,
+    };
+}
 
-const mapStateToProps = ({ users }) => {
-  const userScore = user =>
-    Object.keys(user.answers).length + user.questions.length;
-  return {
-    users: Object.values(users).sort((a, b) => userScore(b) - userScore(a))
-  }
-};
-
-export default connect(mapStateToProps)(Leaderboard)
+export default connect(mapStateToProps)(Leaderboard);
